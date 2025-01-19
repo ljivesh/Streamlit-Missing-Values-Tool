@@ -1,4 +1,3 @@
-from altair.vegalite.v4.api import value
 import pandas as pd
 import streamlit as st
 import numpy as np
@@ -58,15 +57,17 @@ def linear_regression_variable_selector(data_import, column_name):
     else:
         return None
 
-def linear_regression_rows(data_import, prediction_columns, column_name):
+def linear_regression_rows(data_import, prediction_columns, column_sidebar):
+    if data_import is None or prediction_columns is None:
+        return None
     if len(prediction_columns) > 0:
         # new_data_import = data_import.copy()
         new_dataframe = data_import.copy()
-        missing_data = new_dataframe[new_dataframe[column_name].isna()]
-        non_missing_data = new_dataframe[new_dataframe[column_name].notna()]
+        missing_data = new_dataframe[new_dataframe[column_sidebar].isna()]
+        non_missing_data = new_dataframe[new_dataframe[column_sidebar].notna()]
 
         # Training a model
-        y = non_missing_data[column_name]
+        y = non_missing_data[column_sidebar]
         X = non_missing_data[prediction_columns]
 
         reg = LinearRegression().fit(X, y)
@@ -80,7 +81,7 @@ def linear_regression_rows(data_import, prediction_columns, column_name):
         # Replacing the missing values with our predictions
         indicies = list(missing_data.index)
         for i in range(0, len(indicies)):
-            new_dataframe.loc[indicies[i], column_name] = values_to_fill[i]
+            new_dataframe.loc[indicies[i], column_sidebar] = values_to_fill[i]
 
         return new_dataframe
     
